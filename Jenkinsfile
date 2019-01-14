@@ -26,8 +26,6 @@ pipeline {
                         -t vanilla:latest"
         containerExecCmd = "docker exec -i ${containerName} echo hello"
         containerStopCmd = "docker stop ${containerName}"
-        
-        createUtilsProjectCmd = "docker exec -i vanilla_container bash -c 'export RD_URL=http://localhost:4440 && export RD_USER=admin && export RD_PASSWORD=admin && rd projects create --project Utils'"
     }
     
     stages {
@@ -80,6 +78,7 @@ pipeline {
         }
         
         stage('Populate DB with Projects/Jobs') {
+            def createUtilsProjectCmd = "docker exec -i vanilla_container bash -c 'export RD_URL=http://localhost:4440 && export RD_USER=admin && export RD_PASSWORD=admin && rd projects create --project Utils'"
             steps {
                 sshagent (credentials: ['ssh_credentials_for_254']) {
                     sh returnStdout: true, script: 'ssh -o StrictHostKeyChecking=no ${hostUser}@${hostIp} ${createUtilsProjectCmd}'
